@@ -1,0 +1,8 @@
+# Large datasets
+data/midv500/
+data/**
+
+# Archives
+*.zip
+*.tar
+*.tar.gz
