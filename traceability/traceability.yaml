@@ -1,0 +1,43 @@
+obligations:
+  - oid: O-LOG-REC
+    source: "EU AI Act logging/record keeping + GDPR accountability"
+    controls: ["ID-LOG-01"]
+  - oid: O-PURPOSE
+    source: "GDPR purpose limitation"
+    controls: ["ID-PUR-01"]
+  - oid: O-MIN
+    source: "GDPR data minimization"
+    controls: ["ID-MIN-01"]
+  - oid: O-RET
+    source: "GDPR storage limitation"
+    controls: ["ID-RET-01"]
+  - oid: O-ACC
+    source: "Access control / least privilege"
+    controls: ["ID-ACC-01"]
+
+controls:
+  - cid: ID-LOG-01
+    category: "Record keeping"
+    statement: "Every authorization decision MUST emit a minimal decision log record with required fields."
+    enforcement: ["runtime:opa_decision_log", "ci:opa_test", "ci:conftest"]
+    evidence: ["opa_decisions.jsonl", "ci_reports/*.json", "monitoring/windows/*.json"]
+  - cid: ID-PUR-01
+    category: "Purpose limitation"
+    statement: "Requests MUST declare an allowed purpose tag; otherwise deny."
+    enforcement: ["runtime:opa_allow"]
+    evidence: ["opa_decisions.jsonl", "monitoring/windows/*.json"]
+  - cid: ID-MIN-01
+    category: "Data minimization"
+    statement: "Wallet verification requests MUST request claims only within the minimization profile."
+    enforcement: ["runtime:opa_allow"]
+    evidence: ["opa_decisions.jsonl", "monitoring/windows/*.json"]
+  - cid: ID-RET-01
+    category: "Retention & deletion"
+    statement: "Requests MUST not set retention beyond the configured limit; deletion jobs MUST emit completion evidence."
+    enforcement: ["runtime:opa_allow", "runtime:deletion_job"]
+    evidence: ["opa_decisions.jsonl", "deletions/*.json", "monitoring/windows/*.json"]
+  - cid: ID-ACC-01
+    category: "Access control"
+    statement: "Restricted operations MUST be limited to approved roles."
+    enforcement: ["runtime:opa_allow"]
+    evidence: ["opa_decisions.jsonl", "monitoring/windows/*.json"]

@@ -1,0 +1,38 @@
+{
+  "vp_token": {
+    "@context": [
+      "https://www.w3.org/ns/credentials/v2"
+    ],
+    "type": [
+      "VerifiablePresentation"
+    ],
+    "verifiableCredential": [
+      {
+        "@context": [
+          "https://www.w3.org/ns/credentials/v2"
+        ],
+        "type": [
+          "VerifiableCredential",
+          "AgeCredential"
+        ],
+        "issuer": "did:example:issuer",
+        "validFrom": "2025-01-01T00:00:00Z",
+        "credentialSubject": {
+          "id": "did:example:holder",
+          "ageOver18": true
+        }
+      }
+    ],
+    "holder": "did:example:holder"
+  },
+  "presentation_submission": {
+    "id": "psub1",
+    "definition_id": "pd_age_over_18",
+    "descriptor_map": [
+      {
+        "id": "age_credential",
+        "path": "$.vp_token.verifiableCredential[0]"
+      }
+    ]
+  }
+}

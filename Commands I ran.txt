@@ -1,0 +1,43 @@
+Commands were executed using Windows PowerShell
+1) Create + activate venv and install Python deps
+py -3.11 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+2) Build the OPA bundle and start services
+py scripts\build_bundle.py --complexity med
+docker compose up -d --build
+docker compose run --rm opa test /policies/rego /policies/tests -v
+3) Workload (i): MIDV-500 onboarding pipeline
+Put MIDV-500 under: 
+data\midv500\
+Build deterministic index (SHA-256 etc.)
+py scripts\datasets\midv500_ingest.py --root data\midv500 --out data\midv500_index.jsonl
+Run onboarding load
+$env:WORKLOAD="onboarding"
+$env:USE_MIDV500="1"
+$env:N="5000"
+$env:CONC="50"
+py -3.11 scripts\loadgen.py
+4) Workload (ii): Wallet verification aligned with OpenID4VP + VC DM v2.0 (shape)
+$env:WORKLOAD="wallet"
+$env:USE_MIDV500="0"
+$env:N="5000"
+$env:CONC="50"
+py -3.11 scripts\loadgen.py
+(Templates live in workloads\wallet\ and the policy checks protocol="openid4vp" and vc_dm_version="2.0".)
+5) Run the full RQs (PowerShell equivalents of make exp_rqX)
+$env:SEED="1337"
+$env:POLICY_COMPLEXITY="med"
+$env:BASELINE="0"
+$env:USE_MIDV500="1"
+py -m scripts.experiments.exp_rq1
+py -m scripts.experiments.exp_rq2
+py -m scripts.experiments.exp_rq3
+Then generate tables + figures:
+py scripts\analyze\all_metrics.py
+py scripts\analyze\make_figures.py
+Outputs:
+out\metrics\...
+out\paper\tables\...
+out\paper\figures\...
+out\oscal\r1..\assessment-results.json (+ poam.json if findings)

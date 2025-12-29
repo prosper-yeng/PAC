@@ -1,0 +1,29 @@
+{
+  "id": "pd_age_over_18",
+  "input_descriptors": [
+    {
+      "id": "age_credential",
+      "name": "Age Over 18 Credential",
+      "constraints": {
+        "fields": [
+          {
+            "path": [
+              "$.credentialSubject.ageOver"
+            ],
+            "filter": {
+              "type": "boolean"
+            }
+          },
+          {
+            "path": [
+              "$.credentialSubject.ageOver18"
+            ],
+            "filter": {
+              "type": "boolean"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+services:
+  bundle-server:
+    image: nginx:1.27-alpine
+    container_name: eviid-bundle-server
+    ports:
+    - 8888:80
+    volumes:
+    - ./bundle:/usr/share/nginx/html:ro
+  opa:
+    image: openpolicyagent/opa:0.66.0-static
+    container_name: eviid-opa
+    ports:
+    - 8181:8181
+    command:
+    - run
+    - --server
+    - --addr=0.0.0.0:8181
+    - --log-level=info
+    - --config-file=/etc/opa/config.yaml
+    volumes:
+    - ./policies:/policies:ro
+    - ./configs/opa_config.yaml:/etc/opa/config.yaml:ro
+    depends_on:
+    - bundle-server
+    - collector
+  collector:
+    build: ./services/collector
+    container_name: eviid-collector
+    ports:
+    - 8081:8081
+    volumes:
+    - ./out:/app/out
+  identity-api:
+    build: ./services/identity_api
+    container_name: eviid-identity-api
+    ports:
+    - 8080:8080
+    environment:
+    - OPA_URL=http://opa:8181
+    - COLLECTOR_URL=http://collector:8081
+    - RELEASE_ID=${RELEASE_ID:-r1}
+    - ENVIRONMENT_ID=${ENVIRONMENT_ID:-dev}
+    - BASELINE_BYPASS=${BASELINE_BYPASS:-0}
+    depends_on:
+    - opa
+    - collector
