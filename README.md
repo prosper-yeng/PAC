@@ -10,6 +10,15 @@ It provides:
 - OSCAL export (Component Definition + Assessment Results)
 - Experiment runners and analysis scripts (coverage, staleness, overhead, evidence volume, time-to-dossier)
 
+
+## Dataset
+The `data/` directory is excluded from version control due to size.
+
+To reproduce experiments:
+1. Download MIDV-500 from Kaggle
+2. Extract it to: `data/midv500/`
+
+
 ## Quick start
 Prereqs: Docker + Docker Compose, Python 3.10+ (3.11 recommended), `make`.
 
